@@ -16,6 +16,7 @@ from homeassistant.helpers.selector import (
 )
 
 from .const import (
+    CONF_ACCOUNT_ID,
     CONF_ADDRESS,
     CONF_API_KEY,
     CONF_COIN_KEY,
@@ -33,6 +34,9 @@ from .const import (
     POOL_SOURCE_F2_POOL_COINS,
     POOL_SOURCE_F2_POOL_KEY,
     POOL_SOURCE_F2_POOL_NAME,
+    POOL_SOURCE_MINING_DUTCH_KEY,
+    POOL_SOURCE_MINING_DUTCH_NAME,
+    POOL_SOURCE_MINING_DUTCH_POOL_COINS,
     POOL_SOURCE_PUBLIC_POOL_KEY,
     POOL_SOURCE_PUBLIC_POOL_NAME,
     POOL_SOURCE_SOLO_POOL_COINS,
@@ -69,6 +73,10 @@ STEP_POOL_SOURCE_SCHEMA = vol.Schema(
                     SelectOptionDict(
                         value=POOL_SOURCE_CK_POOL_KEY,
                         label=POOL_SOURCE_CK_POOL_NAME,
+                    ),
+                    SelectOptionDict(
+                        value=POOL_SOURCE_MINING_DUTCH_KEY,
+                        label=POOL_SOURCE_MINING_DUTCH_NAME,
                     ),
                 ],
                 mode=SelectSelectorMode.DROPDOWN,
@@ -169,7 +177,11 @@ class PoolConfigFlow(ConfigFlow, domain=DOMAIN):
 
         if user_input[CONF_POOL_KEY] == POOL_SOURCE_CK_POOL_KEY:
             self._data[CONF_POOL_NAME] = POOL_SOURCE_CK_POOL_NAME
-            return await self.async_step_wallet(user_input)
+            return await self.async_step_ck_pool(user_input)
+
+        if user_input[CONF_POOL_KEY] == POOL_SOURCE_MINING_DUTCH_KEY:
+            self._data[CONF_POOL_NAME] = POOL_SOURCE_MINING_DUTCH_NAME
+            return await self.async_step_mining_dutch_pool(user_input)
 
         errors["base"] = "Invalid pool source"
 
@@ -269,6 +281,63 @@ class PoolConfigFlow(ConfigFlow, domain=DOMAIN):
 
         return await self.async_step_wallet(user_input)
 
+    async def async_step_ck_pool(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Handle the ck pool step."""
+        self._data[CONF_COIN_KEY] = CryptoCoin.BTC.value
+        return await self.async_step_wallet(user_input)
+
+    async def async_step_mining_dutch_pool(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Handle the mining dutch step."""
+        errors: dict[str, str] = {}
+
+        coins: list[SelectOptionDict] = [
+            SelectOptionDict(value=coin.value, label=coin.name)
+            for coin in POOL_SOURCE_MINING_DUTCH_POOL_COINS
+        ]
+
+        coin_schema = vol.Schema(
+            {
+                vol.Required(CONF_COIN_KEY): SelectSelector(
+                    SelectSelectorConfig(
+                        options=coins,
+                        mode=SelectSelectorMode.DROPDOWN,
+                    )
+                ),
+                vol.Required(CONF_API_KEY): str,
+                vol.Required(CONF_ACCOUNT_ID): str,
+            }
+        )
+
+        # if the user input CONF_URL is None, show the form
+        if (
+            user_input is None
+            or user_input.get(CONF_COIN_KEY) is None
+            or user_input.get(CONF_API_KEY) is None
+        ):
+            return self.async_show_form(
+                step_id="mining_dutch_pool",
+                data_schema=coin_schema,
+                errors=errors,
+            )
+
+        user_input[CONF_ADDRESS] = user_input[CONF_ACCOUNT_ID]
+        self._data.update(user_input)
+
+        result = await self._create_entry(errors)
+
+        if result is None:
+            return self.async_show_form(
+                step_id="mining_dutch_pool",
+                data_schema=coin_schema,
+                errors=errors,
+            )
+
+        return result
+
     async def async_step_wallet(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
@@ -284,6 +353,18 @@ class PoolConfigFlow(ConfigFlow, domain=DOMAIN):
             )
 
         self._data.update(user_input)
+
+        result = await self._create_entry(errors)
+
+        if result is None:
+            return self.async_show_form(
+                step_id="wallet", data_schema=STEP_WALLET_DATA_SCHEMA, errors=errors
+            )
+
+        return result
+
+    async def _create_entry(self, errors: dict[str, str]) -> ConfigFlowResult | None:
+        """Validate and create or return the errors."""
 
         try:
             pool_data = await self.validate_input()
@@ -304,6 +385,4 @@ class PoolConfigFlow(ConfigFlow, domain=DOMAIN):
                 title=pool_data.title, data=pool_data.config_data
             )
 
-        return self.async_show_form(
-            step_id="wallet", data_schema=STEP_WALLET_DATA_SCHEMA, errors=errors
-        )
+        return None

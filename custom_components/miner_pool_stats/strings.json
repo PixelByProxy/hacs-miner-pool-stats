@@ -1,11 +1,27 @@
 {
+  "common": {
+    "coin_key": "Coin",
+    "api_key": "API Key"
+  },
   "config": {
     "step": {
       "user": {
         "data": {
-          "host": "[%key:common::config_flow::data::host%]",
-          "username": "[%key:common::config_flow::data::username%]",
-          "password": "[%key:common::config_flow::data::password%]"
+          "pool_key": "Mining Pool"
+        }
+      },
+      "mining_dutch_pool": {
+        "title": "Mining Dutch",
+        "description": "The API Key and Account ID can be found on the Account Settings page when you log into the Mining Dutch website.",
+        "data": {
+          "coin_key": "[%key:component::miner_pool_stats::common::coin_key%]",
+          "api_key": "[%key:component::miner_pool_stats::common::api_key%]",
+          "account_id": "Account ID"
+        }
+      },
+      "wallet": {
+        "data": {
+          "address": "Address"
         }
       }
     },

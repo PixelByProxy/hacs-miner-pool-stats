@@ -1,4 +1,8 @@
 {
+    "common": {
+        "api_key": "API Key",
+        "coin_key": "Coin"
+    },
     "config": {
         "abort": {
             "already_configured": "Device is already configured"
@@ -9,11 +13,23 @@
             "unknown": "Unexpected error"
         },
         "step": {
+            "mining_dutch_pool": {
+                "data": {
+                    "account_id": "Account ID",
+                    "api_key": "API Key",
+                    "coin_key": "Coin"
+                },
+                "description": "The API Key and Account ID can be found on the Account Settings page when you log into the Mining Dutch website.",
+                "title": "Mining Dutch"
+            },
             "user": {
                 "data": {
-                    "host": "Host",
-                    "password": "Password",
-                    "username": "Username"
+                    "pool_key": "Mining Pool"
+                }
+            },
+            "wallet": {
+                "data": {
+                    "address": "Address"
                 }
             }
         }

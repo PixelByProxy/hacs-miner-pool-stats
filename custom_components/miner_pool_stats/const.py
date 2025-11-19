@@ -15,6 +15,7 @@ CONF_COIN_NAME = "coin_name"
 CONF_UNIQUE_ID = "unique_id"
 CONF_SOURCE = "source"
 CONF_API_KEY = "api_key"
+CONF_ACCOUNT_ID = "account_id"
 
 POOL_SOURCE_PUBLIC_POOL_KEY = "public_pool"
 POOL_SOURCE_PUBLIC_POOL_NAME = "Public Pool"
@@ -26,6 +27,8 @@ POOL_SOURCE_COIN_MINERS_KEY = "coin_miners"
 POOL_SOURCE_COIN_MINERS_NAME = "Coin-Miners"
 POOL_SOURCE_CK_POOL_KEY = "ck_pool"
 POOL_SOURCE_CK_POOL_NAME = "solo.ckpool.org"
+POOL_SOURCE_MINING_DUTCH_KEY = "mining_dutch"
+POOL_SOURCE_MINING_DUTCH_NAME = "minking-dutch.nl"
 
 WALLET_ADDRESS = "Wallet Address"
 WORKER = "Worker"
@@ -129,4 +132,10 @@ POOL_SOURCE_SOLO_POOL_COINS = [
     CryptoCoin.XEL,
     CryptoCoin.XMR,
     CryptoCoin.ZEPH,
+]
+
+POOL_SOURCE_MINING_DUTCH_POOL_COINS = [
+    CryptoCoin.BTC,
+    CryptoCoin.BCH,
+    CryptoCoin.LTC,
 ]
