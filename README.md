@@ -32,8 +32,8 @@ Install via HACS (Home Assistant Community Store).
 
 - Add the integration via **Settings → Devices & Services → Add Integration** and search
   for "Miner Pool Stats".
-- The config flow will prompt you to pick a pool source (e.g. `f2pool`, `coin_miners`,
-  `public_pool`, `solo_pool`, `ck_pool`, `mining_dutch`) and then collect pool-specific
+- The config flow will prompt you to pick a pool source (e.g. `CKPool`, `Coin-Miners.info`,
+  `F2Pool`, `Mining Core`, `Mining Dutch`, `Public Pool`, `SoloPool.org`) and then collect pool-specific
   settings (coin, API key, account/wallet address, etc.).
 - The integration constructs a `unique_id` in the form:
 
