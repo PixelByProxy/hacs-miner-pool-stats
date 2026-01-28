@@ -82,6 +82,10 @@ class F2PoolClient(PoolClient):
                         current_time = as_utc(now())
                         is_online = current_time - last_seen < timedelta(minutes=30)
 
+                        # Skip offline workers
+                        if not is_online:
+                            continue
+
                         worker = PoolAddressWorkerData(
                             name=worker_arr[0],
                             best_difficulty=None,
@@ -90,7 +94,6 @@ class F2PoolClient(PoolClient):
                                 .to_unit(HashRateUnit.GH)
                                 .value
                             ),
-                            is_online=is_online,
                         )
 
                         workers[worker.name] = worker
@@ -105,7 +108,6 @@ class F2PoolClient(PoolClient):
                         float(json["paid"]),
                         float(json["balance"]),
                         None,
-                        int(json["worker_length"]),
                         list(workers.values()),
                     )
 

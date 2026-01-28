@@ -50,11 +50,14 @@ class PublicPoolClient(PoolClient):
                         current_time = as_utc(now())
                         is_online = current_time - last_seen < timedelta(minutes=30)
 
+                        # Skip offline workers
+                        if not is_online:
+                            continue
+
                         worker = PoolAddressWorkerData(
                             name=workerJson["name"],
                             best_difficulty=float(workerJson["bestDifficulty"]),
                             hash_rate=float(workerJson["hashRate"]),
-                            is_online=is_online,
                         )
 
                         # get the maximum stored for the best difficulty
@@ -72,9 +75,6 @@ class PublicPoolClient(PoolClient):
                             workers[worker.name].best_difficulty = self._get_max_float(
                                 workers[worker.name].best_difficulty,
                                 worker.best_difficulty,
-                            )
-                            workers[worker.name].is_online = (
-                                workers[worker.name].is_online or worker.is_online
                             )
                         else:
                             workers[worker.name] = worker
@@ -103,7 +103,6 @@ class PublicPoolClient(PoolClient):
                         None,
                         None,
                         best_difficulty,
-                        int(json["workersCount"]),
                         list(workers.values()),
                     )
 

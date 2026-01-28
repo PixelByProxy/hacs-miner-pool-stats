@@ -64,8 +64,8 @@ class MiningDutchPoolClient(PoolClient):
                         # Worker is considered online if alive=1
                         is_online = bool(miner["alive"])
 
-                        # Mining Dutch may return multiple entries for the same worker when an old one is offline
-                        if not is_online and worker_name in workers:
+                        # Skip offline workers
+                        if not is_online:
                             continue
 
                         workers[worker_name] = PoolAddressWorkerData(
@@ -74,7 +74,6 @@ class MiningDutchPoolClient(PoolClient):
                             HashRate(hashrate, HashRateUnit.MH)
                             .to_unit(HashRateUnit.GH)
                             .value,
-                            is_online,
                         )
 
                     # if there are no workers, log a warning
@@ -87,7 +86,6 @@ class MiningDutchPoolClient(PoolClient):
                         None,  # total_paid - not provided by API
                         None,  # current_balance - not provided by API
                         overall_max_difficulty,
-                        len(workers),
                         list(workers.values()),
                     )
 

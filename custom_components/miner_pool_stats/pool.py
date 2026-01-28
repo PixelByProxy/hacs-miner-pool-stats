@@ -63,7 +63,6 @@ class PoolAddressWorkerData:
     name: str
     best_difficulty: float | None
     hash_rate: float | None
-    is_online: bool
 
 
 @dataclass
@@ -73,7 +72,6 @@ class PoolAddressData:
     total_paid: float | None
     current_balance: float | None
     best_difficulty: float | None
-    worker_count: int
     worker_list: list[PoolAddressWorkerData]
 
 

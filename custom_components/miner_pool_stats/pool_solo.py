@@ -36,6 +36,10 @@ class SoloPoolClient(PoolClient):
                     # create a dictionary of workers by name
                     workers: dict[str, PoolAddressWorkerData] = {}
                     for worker_name in json["workers"]:
+                        # Skip offline workers
+                        if bool(json["workers"][worker_name]["offline"]):
+                            continue
+
                         worker = PoolAddressWorkerData(
                             name=worker_name,
                             best_difficulty=None,
@@ -46,7 +50,6 @@ class SoloPoolClient(PoolClient):
                                 .to_unit(HashRateUnit.GH)
                                 .value
                             ),
-                            is_online=not bool(json["workers"][worker_name]["offline"]),
                         )
 
                         workers[worker.name] = worker
@@ -61,7 +64,6 @@ class SoloPoolClient(PoolClient):
                         float(json["paymentsTotal"] or 0.00),
                         float(json["payments"] or 0.00),
                         None,
-                        int(json["workersTotal"]),
                         list(workers.values()),
                     )
 

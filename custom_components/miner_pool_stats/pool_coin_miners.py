@@ -44,7 +44,6 @@ class CoinMinersPoolClient(PoolClient):
                 name=worker_json["ID"],
                 best_difficulty=None,
                 hash_rate=float(worker_json["accepted"]),
-                is_online=True,
             )
 
             workers[worker.name] = worker
@@ -66,7 +65,6 @@ class CoinMinersPoolClient(PoolClient):
             float(data_json["total"]),
             float(data_json["unpaid"]),
             None,
-            len(workers),
             list(workers.values()),
         )
 

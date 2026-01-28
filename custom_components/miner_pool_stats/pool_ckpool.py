@@ -50,6 +50,10 @@ class CKPoolClient(PoolClient):
                         )
                         is_online = current_time - last_share < timedelta(minutes=30)
 
+                        # Skip offline workers
+                        if not is_online:
+                            continue
+
                         workers[worker_name] = PoolAddressWorkerData(
                             worker_name,
                             float(worker_data["bestever"]),
@@ -58,7 +62,6 @@ class CKPoolClient(PoolClient):
                                 .to_unit(HashRateUnit.GH)
                                 .value
                             ),
-                            is_online,
                         )
 
                     # if there are no workers, log a warning
@@ -74,7 +77,6 @@ class CKPoolClient(PoolClient):
                         None,  # total_paid - not provided by API
                         None,  # current_balance - not provided by API
                         pool_best_diff,
-                        len(workers),
                         list(workers.values()),
                     )
 

@@ -72,7 +72,7 @@ ADDRESS_SENSOR_DESCRIPTIONS = [
         translation_key=KEY_WORKER_COUNT,
         state_class=SensorStateClass.MEASUREMENT,
         native_unit_of_measurement=UNIT_WORKER_COUNT,
-        value_fn=lambda data: data.worker_count,
+        value_fn=lambda data: len(data.worker_list),
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     PoolAddressSensorEntityDescription(
@@ -181,6 +181,7 @@ class PoolAddressWorkerSensorEntity(PoolAddressWorkerDeviceEntity, SensorEntity)
     """Representation of a Pool Address Worker sensor."""
 
     entity_description: PoolAddressWorkerEntityDescription
+    is_online: bool = True
 
     def __init__(
         self,
@@ -216,8 +217,9 @@ class PoolAddressWorkerSensorEntity(PoolAddressWorkerDeviceEntity, SensorEntity)
         )
         if updated_worker is not None:
             self.worker = updated_worker
+            self.is_online = True
         else:
-            self.worker.is_online = False
+            self.is_online = False
         self._update_properties()
         self.async_write_ha_state()
 
@@ -229,4 +231,4 @@ class PoolAddressWorkerSensorEntity(PoolAddressWorkerDeviceEntity, SensorEntity)
     @property
     def available(self) -> bool:
         """Check if device and sensor is available in data."""
-        return super().available and self.worker.is_online
+        return super().available and self.is_online

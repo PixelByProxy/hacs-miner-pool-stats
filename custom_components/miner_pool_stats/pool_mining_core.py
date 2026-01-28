@@ -55,7 +55,6 @@ class MiningCorePoolClient(PoolClient):
                                 .to_unit(HashRateUnit.GH)
                                 .value
                             ),
-                            is_online=True,  # Mining Core doesn't provide online status
                         )
 
                         workers[worker.name] = worker
@@ -70,7 +69,6 @@ class MiningCorePoolClient(PoolClient):
                         float(json.get("totalPaid", 0)),
                         None,
                         None,
-                        len(workers),
                         list(workers.values()),
                     )
 
