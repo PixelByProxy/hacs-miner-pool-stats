@@ -1,11 +1,11 @@
-"""Sool Pool Client for the Miner Pool Stats integration."""
+"""Mining Core Pool Client for the Miner Pool Stats integration."""
 
 import logging
 
 from aiohttp import ClientError, ClientSession
 
-from .hash import HashRate, HashRateUnit
-from .pool import (
+from ..hash import HashRate, HashRateUnit
+from ..pool import (
     PoolAddressData,
     PoolAddressWorkerData,
     PoolClient,
@@ -19,13 +19,16 @@ DATA_UPDATE_TIMEOUT: float = 10
 DATA_UPDATE_RETRIES: int = 3
 
 
-class SoloPoolClient(PoolClient):
-    """Public Pool Client API."""
+class MiningCorePoolClient(PoolClient):
+    """Mining Core Pool Client API."""
 
     async def async_get_data(self) -> PoolAddressData:
         """Get updated data from the pool."""
 
-        url = f"https://{self._pool_config.coin_key}.solopool.org/api/accounts/{self._pool_config.address}"
+        if self._pool_config.pool_url is None:
+            raise PoolConnectionError("Pool url is not configured.")
+
+        url = f"{self._pool_config.pool_url.rstrip('/')}/api/pools/{self._pool_config.coin_key}/miners/{self._pool_config.address}"
         _LOGGER.debug("Fetching workers from %s", url)
 
         try:
@@ -35,18 +38,20 @@ class SoloPoolClient(PoolClient):
 
                     # create a dictionary of workers by name
                     workers: dict[str, PoolAddressWorkerData] = {}
-                    for worker_name in json["workers"]:
-                        # Skip offline workers
-                        if bool(json["workers"][worker_name]["offline"]):
-                            continue
+
+                    # Extract workers from the performance data
+                    performance = json.get("performance", {})
+                    performance_workers = performance.get("workers", {})
+
+                    for worker_name, worker_data in performance_workers.items():
+                        # Hashrate is provided in H/s, convert to GH/s
+                        hashrate = float(worker_data.get("hashrate", 0))
 
                         worker = PoolAddressWorkerData(
                             name=worker_name,
                             best_difficulty=None,
                             hash_rate=(
-                                HashRate.from_number(
-                                    float(json["workers"][worker_name]["hr"])
-                                )
+                                HashRate.from_number(hashrate)
                                 .to_unit(HashRateUnit.GH)
                                 .value
                             ),
@@ -61,8 +66,8 @@ class SoloPoolClient(PoolClient):
                         )
 
                     return PoolAddressData(
-                        float(json["paymentsTotal"] or 0.00),
-                        float(json["payments"] or 0.00),
+                        float(json.get("totalPaid", 0)),
+                        None,
                         None,
                         list(workers.values()),
                     )

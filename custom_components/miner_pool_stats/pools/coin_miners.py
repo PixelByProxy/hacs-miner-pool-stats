@@ -6,9 +6,9 @@ from typing import Any
 
 from aiohttp import ClientError, ClientSession
 
-from .const import CONF_COIN_KEY
-from .hash import HashRate, HashRateUnit
-from .pool import (
+from ..const import CONF_COIN_KEY
+from ..hash import HashRate, HashRateUnit
+from ..pool import (
     PoolAddressData,
     PoolAddressWorkerData,
     PoolClient,

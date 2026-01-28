@@ -14,13 +14,13 @@ from .const import (
     POOL_SOURCE_SOLO_POOL_KEY,
 )
 from .pool import CONF_POOL_KEY, PoolClient, PoolInitData
-from .pool_ckpool import CKPoolClient
-from .pool_coin_miners import CoinMinersPoolClient
-from .pool_f2 import F2PoolClient
-from .pool_mining_core import MiningCorePoolClient
-from .pool_mining_dutch import MiningDutchPoolClient
-from .pool_public import PublicPoolClient
-from .pool_solo import SoloPoolClient
+from .pools.ck_pool import CKPoolClient
+from .pools.coin_miners import CoinMinersPoolClient
+from .pools.f2 import F2PoolClient
+from .pools.mining_core import MiningCorePoolClient
+from .pools.mining_dutch import MiningDutchPoolClient
+from .pools.public_pool import PublicPoolClient
+from .pools.solo_pool import SoloPoolClient
 
 
 class PoolFactory:

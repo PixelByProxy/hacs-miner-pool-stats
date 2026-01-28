@@ -7,9 +7,9 @@ from aiohttp import ClientError, ClientSession
 
 from homeassistant.util.dt import as_utc, now
 
-from .const import CryptoCoin
-from .hash import HashRate, HashRateUnit
-from .pool import (
+from ..const import CryptoCoin
+from ..hash import HashRate, HashRateUnit
+from ..pool import (
     PoolAddressData,
     PoolAddressWorkerData,
     PoolClient,
